@@ -1,0 +1,115 @@
+<html lang="de">
+
+    <!--Style-->    
+    <style>
+        .center {
+            text-align: center;
+        }
+        .button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: auto;
+            cursor: pointer;
+            display: block;
+        }
+    </style>
+
+    <head>
+        <title>Hangman Webside</title>
+        <h1 style="color:rgb(255, 0, 0);font-family:verdana;font-size: 300%;" class="center">Hangman</h1>
+    </head>
+
+    <hr color="black" size="1" width="100%">
+
+    <!---Start Button-->
+    <body style="background-color: powderblue;">
+        <button class=button type="button" onclick="startGame()">Start Game</button>
+        <p id="wordDisplay" class="center"></p>
+        <p id="message" class="center"></p>
+    </body>
+
+    <!--JavaScript-->
+    <script>
+        // Array of words
+        const words = [
+            "Apfel", "Banane", "Computer", "Dinosaurier", "Elefant", "Fahrrad", "Giraffe", "Haus", "Insel", "Juwel",
+            "Känguru", "Lampe", "Mond", "Nacht", "Ozean", "Pyramide", "Quark", "Regenbogen", "Sonne", "Tiger",
+            "Uhr", "Vulkan", "Wasserfall", "Xylophon", "Yacht", "Zebra", "Abenteuer", "Blume", "Chamäleon", "Drache",
+            "Energie", "Flugzeug", "Garten", "Himmel", "Insel", "Joghurt", "Kaktus", "Löwe", "Magie", "Nebel",
+            "Oper", "Papagei", "Qualle", "Rakete", "Schatz", "Traum", "Universum", "Vogel", "Wüste", "Zauberer",
+            "Bäckerei", "Diamant", "Eichhörnchen", "Fisch", "Glocke", "Honig", "Igel", "Juwelier", "Käse", "Limonade",
+            "Maus", "Nuss", "Orange", "Pinsel", "Quarz", "Rosen", "Stern", "Trompete", "Ursprung", "Vase",
+            "Wolke", "Zirkus", "Abend", "Berg", "Café", "Dach", "Eis", "Feld", "Gitarre", "Harmonie",
+            "Idee", "Junge", "König", "Licht", "Märchen", "Nussbaum", "Oberfläche", "Pferd", "Qualität", "Ritter"
+        ];
+
+        let word = "";
+        let guessedLetters = [];
+        let incorrectGuesses = 0;
+        const maxIncorrectGuesses = 6;
+
+        function startGame() {
+            // Initialize game variables
+            const randomNumber = Math.floor(Math.random() * words.length);
+            word = words[randomNumber].toLowerCase();
+            guessedLetters = new Array(word.length).fill("_");
+            incorrectGuesses = 0;
+
+            // Display the initial word with underscores
+            document.getElementById("wordDisplay").textContent = guessedLetters.join(" ");
+            document.getElementById("message").textContent = "Guess a letter!";
+        }
+        // Function to handle letter guessing
+        function guessLetter() {
+            if (word === "") {
+                alert("Please start the game first!");
+                return;
+            }
+
+            const letter = prompt("Guess a letter:").toLowerCase();
+            //check if the input is a single letter
+            if (!letter || letter.length !== 1) {
+                alert("Please enter a single letter.");
+                return;
+            }
+            //check if the letter has already been guessed
+            if (word.includes(letter)) {
+                for (let i = 0; i < word.length; i++) {
+                    if (word[i] === letter) {
+                        guessedLetters[i] = letter;
+                    }
+                }
+                document.getElementById("wordDisplay").textContent = guessedLetters.join(" ");
+            } else {
+                incorrectGuesses++;
+                alert(`Incorrect guess! You have ${maxIncorrectGuesses - incorrectGuesses} guesses left.`);
+            }
+
+            checkGameStatus();
+        }
+        // Function to check the game status
+        function checkGameStatus() {
+            if (!guessedLetters.includes("_")) {
+                document.getElementById("message").textContent = "Congratulations! You guessed the word!";
+                word = ""; // Reset the game
+            } else if (incorrectGuesses >= maxIncorrectGuesses) {
+                document.getElementById("message").textContent = `Game Over! The word was: ${word}`;
+                word = ""; // Reset the game
+            }
+        }
+
+        // Add event listener for keypress to guess letters
+        document.addEventListener("keydown", (event) => {
+            if (word && /^[a-zA-Z]$/.test(event.key)) {
+                guessLetter(event.key.toLowerCase());
+            }
+        });
+    </script>
+
+</html>
