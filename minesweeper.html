@@ -1,0 +1,149 @@
+<html class="html">
+    <head>
+        <link rel="stylesheet" href="style.css">
+        <h1 class="heading">Minesweeper</h1>
+    </head>
+    <body>
+        
+    </body>
+</html>
+    <script>
+       let mines = 10
+       let placedMines = 0
+       let height = 10
+       let width = 10
+
+
+        // Create a 2D array to represent the grid
+        let grid = Array.from({ length: height }, () => Array(width).fill(0))
+        // Function to place mines randomly in the grid
+        function placeMines() {
+            while (placedMines < mines) {
+                let row = Math.floor(Math.random() * height)
+                let col = Math.floor(Math.random() * width)
+                if (grid[row][col] !== 'X') {
+                    grid[row][col] = 'X'
+                    placedMines++
+                }
+            }
+        }
+        // Function to calculate the numbers around the mines
+        function calculateNumbers() {
+            for (let row = 0; row < height; row++) {
+                for (let col = 0; col < width; col++) {
+                    if (grid[row][col] === 'X') continue
+                    let count = 0
+                    for (let i = -1; i <= 1; i++) {
+                        for (let j = -1; j <= 1; j++) {
+                            if (row + i >= 0 && row + i < height && col + j >= 0 && col + j < width) {
+                                if (grid[row + i][col + j] === 'X') count++
+                            }
+                        }
+                    }
+                    grid[row][col] = count
+                }
+            }
+        }
+        // Function to create the grid and display it
+        function createGrid() {
+            const gridContainer = document.createElement('div')
+            gridContainer.className = 'grid-container'
+            for (let row = 0; row < height; row++) {
+                for (let col = 0; col < width; col++) {
+                    const cell = document.createElement('div')
+                    cell.className = 'cell'
+                    cell.dataset.row = row
+                    cell.dataset.col = col
+                    cell.addEventListener('click', () => handleCellClick(row, col))
+                    gridContainer.appendChild(cell)
+                }
+            }
+            document.body.appendChild(gridContainer)
+        }
+        // Function to handle cell click events
+        function handleCellClick(row, col) {
+            const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`)
+            if (grid[row][col] === 'X') {
+                cell.classList.add('mine')
+                alert('Game Over! You hit a mine!')
+                revealMines()
+            } else {
+                cell.textContent = grid[row][col] === 0 ? '' : grid[row][col]
+                cell.classList.add('revealed')
+            }
+        }
+        // Function to reveal all mines when the game is over
+        function revealMines() {
+            const cells = document.querySelectorAll('.cell')
+            cells.forEach(cell => {
+                const row = cell.dataset.row
+                const col = cell.dataset.col
+                if (grid[row][col] === 'X') {
+                    cell.classList.add('mine')
+                }
+            })
+        }
+        
+
+        // Initialize the game
+        placeMines()
+        calculateNumbers()
+        createGrid()
+        // Add CSS styles for the grid and cells
+        const style = document.createElement('style')
+        style.textContent = `
+            .grid-container {
+                display: grid;
+                grid-template-columns: repeat(${width}, 40px);
+                gap: 2px;
+            }
+            .cell {
+                width: 40px;
+                height: 40px;
+                background-color: #f0f0f0;
+                border: 1px solid #ccc;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 20px;
+            }
+            .cell.revealed {
+                background-color: #e0e0e0;
+            }
+            .cell.mine {
+                background-color: red;
+            }
+        `
+        document.head.appendChild(style)
+
+        
+
+        
+
+
+
+    </script>
+    <style>
+        html {
+    background-color: hwb(73 8% 6%);
+}
+
+h1{
+    text-align: center;
+    color: black;
+    font-size: 2.5em;
+    margin: 20px 0;
+
+}
+
+td.revealed {
+    background-color: #b0c4de;
+    cursor: default;
+}
+td.mine {
+    background-color: #ff4d4d;
+}
+td.flag {
+    background-color: #ffd700;
+}
+    </style>
